@@ -24,23 +24,18 @@ public class CountLessThanWeaponTypeCommand implements Command {
 
     @Override
     public Response execute(Request request) {
-        List<String> args = request.args();
-        String wtStr;
-        if (!args.isEmpty()) {
-            wtStr = args.get(0);
-        } else {
-            wtStr = reader.prompt("Enter weaponType: ");
-        }
+        String wtStr = request.args().isEmpty()
+                ? reader.prompt("Enter weaponType: ")
+                : request.args().get(0);
+
         try {
             WeaponType wt = WeaponType.valueOf(wtStr.toUpperCase());
             long count = collectionManager.getCollection().values().stream()
-                    .filter(human -> {
-                        if (human.getWeaponType() == null) return false;
-                        return human.getWeaponType().compareTo(wt) < 0;
-                    }).count();
-            return new Response("Number of elements with weaponType less than " + wt + ": " + count, null, null);
+                    .filter(human -> human.getWeaponType() != null && human.getWeaponType().compareTo(wt) < 0)
+                    .count();
+            return new Response("Number of elements with weaponType less than %s:%d".formatted(wt, count));
         } catch (IllegalArgumentException e) {
-            return new Response("Invalid weaponType value", null, null);
+            return new Response("Invalid weaponType value");
         }
     }
 

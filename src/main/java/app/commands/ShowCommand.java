@@ -18,13 +18,13 @@ public class ShowCommand implements Command {
     @Override
     public Response execute(Request request) {
         if (collectionManager.getElements().isEmpty()) {
-            return new Response("Collection is empty", null, null);
+            return new Response("Collection is empty");
         }
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (HumanBeing human : collectionManager.getElements()) {
             sb.append(human).append("\n");
         }
-        return new Response(sb.toString(), null, null);
+        return new Response(sb.toString());
     }
 
     @Override

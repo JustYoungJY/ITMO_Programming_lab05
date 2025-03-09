@@ -25,5 +25,4 @@ public record Response(String message, List<HumanBeing> persons, String script) 
     public static Response empty() {
         return new Response(null);
     }
-
 }

@@ -26,20 +26,22 @@ public class InsertCommand implements Command {
 
     @Override
     public Response execute(Request request) {
-        List<String> args = request.args();
-        String keyStr;
-        if (!args.isEmpty()) {
-            keyStr = args.get(0);
-        } else {
-            keyStr = reader.prompt("Enter key: ");
-        }
+        String keyStr = request.args().isEmpty()
+                ? reader.prompt("Enter key: ")
+                : request.args().get(0);
+
         try {
             Long key = Long.parseLong(keyStr);
+
             HumanBeing human = factory.createHumanBeing();
+            // todo потом тяжело будет клиент-сервер воткнуть
+            // todo из-за того, что именно команда вызывает получение элемента с консоли
+            // todo а не внешний обработчик, который придет к команде уже с элементов для вставки
+
             collectionManager.insert(key, human);
-            return new Response("Item added", null, null);
+            return new Response("Item added");
         } catch (NumberFormatException e) {
-            return new Response("The key must be a number", null, null);
+            return new Response("The key must be a number");
         }
     }
 

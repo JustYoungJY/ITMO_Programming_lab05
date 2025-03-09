@@ -20,22 +20,20 @@ public class RemoveKeyCommand implements Command {
 
     @Override
     public Response execute(Request request) {
-        String keyStr;
-        if (request.args().isEmpty()) {
-            keyStr = request.args().get(0);
-        } else {
-            keyStr = reader.prompt("Enter key to remove: ");
-        }
+        String keyStr = request.args().isEmpty()
+                ? reader.prompt("Enter key to remove: ")
+                : request.args().get(0);
+
         try {
             Long key = Long.parseLong(keyStr);
             HumanBeing removed = collectionManager.removeKey(key);
             if (removed != null) {
-                return new Response("Item removed", null, null);
+                return new Response("Item removed");
             } else {
-                return new Response("Element with this key not found", null, null);
+                return new Response("Element with this key not found");
             }
         } catch (NumberFormatException e) {
-            return new Response("The key must be a number", null, null);
+            return new Response("The key must be a number");
         }
     }
 
@@ -49,4 +47,3 @@ public class RemoveKeyCommand implements Command {
         return "remove an element from a collection by its key";
     }
 }
-

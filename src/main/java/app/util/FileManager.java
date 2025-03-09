@@ -32,7 +32,7 @@ public class FileManager {
 
     public TreeMap<Long, HumanBeing> loadCollection() throws Exception {
         File file = new File(fileName);
-        if (!file.exists()) {
+        if (!file.exists() || !file.canRead()) {
             return new TreeMap<>();
         }
         // Десериализуем XML в объект CollectionWrapper
@@ -45,11 +45,10 @@ public class FileManager {
         // Оборачиваем карту в CollectionWrapper
         CollectionWrapper wrapper = new CollectionWrapper(collection);
         File file = new File(fileName);
+
         File parentDir = file.getParentFile();
-        if (parentDir != null && !parentDir.exists()) {
-            if (!parentDir.mkdirs()) {
-                throw new Exception("Failed to create directory: " + parentDir.getAbsolutePath());
-            }
+        if (parentDir != null && !parentDir.exists() && !parentDir.mkdirs()) {
+            throw new Exception("Failed to create directory: " + parentDir.getAbsolutePath());
         }
         // Сериализуем обертку в XML и записываем в файл
         xmlMapper.writeValue(file, wrapper);

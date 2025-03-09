@@ -28,7 +28,7 @@ public class HumanBeingFactory {
             try {
                 return function.apply(input);
             } catch (Exception e) {
-                System.out.println("Error: " + e.getMessage() + ". Please try again.");
+                System.out.printf("Error: %s. Please try again.", e.getMessage());
             }
         }
     }
