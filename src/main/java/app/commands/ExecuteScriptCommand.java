@@ -22,20 +22,18 @@ public class ExecuteScriptCommand implements Command {
 
     @Override
     public Response execute(Request request) {
-        String fileName;
-        if (!request.args().isEmpty()) {
-            fileName = request.args().get(0);
-        } else {
-            fileName = reader.prompt("Enter script file name: ");
-        }
+        String fileName = request.args().isEmpty()
+                ? reader.prompt("Enter script file name: ")
+                : request.args().get(0);
+
         try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
             String line;
             while ((line = br.readLine()) != null) {
                 invoker.executeCommand(new Request(line.trim(), Collections.emptyList(), Collections.emptyList()));
             }
-            return new Response("Script executed", null, null);
+            return new Response("Script executed");
         } catch (Exception e) {
-            return new Response("Error executing script: " + e.getMessage(), null, null);
+            return new Response("Error executing script: %s".formatted(e.getMessage()));
         }
     }
 

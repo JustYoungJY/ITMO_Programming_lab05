@@ -13,12 +13,10 @@ import app.util.InputReader;
 public class RemoveLowerCommand implements Command {
     private final CollectionManager<HumanBeing> collectionManager;
     private final HumanBeingFactory factory;
-    private final InputReader reader;
 
-    public RemoveLowerCommand(CollectionManager<HumanBeing> collectionManager, HumanBeingFactory factory, InputReader reader) {
+    public RemoveLowerCommand(CollectionManager<HumanBeing> collectionManager, HumanBeingFactory factory) {
         this.collectionManager = collectionManager;
         this.factory = factory;
-        this.reader = reader;
     }
 
     @Override
@@ -27,7 +25,7 @@ public class RemoveLowerCommand implements Command {
         int initialSize = collectionManager.getCollection().size();
         collectionManager.getCollection().values().removeIf(human -> human.compareTo(reference) < 0);
         int removed = initialSize - collectionManager.getCollection().size();
-        return new Response(removed + "items removed", null, null);
+        return new Response(removed + "items removed");
     }
 
     @Override

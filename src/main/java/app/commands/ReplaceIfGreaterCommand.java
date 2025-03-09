@@ -25,28 +25,25 @@ public class ReplaceIfGreaterCommand implements Command {
 
     @Override
     public Response execute(Request request) {
-        List<String> args = request.args();
-        String keyStr;
-        if (!args.isEmpty()) {
-            keyStr = args.get(0);
-        } else {
-            keyStr = reader.prompt("Enter key for replacement: ");
-        }
+        String keyStr = request.args().isEmpty()
+                ? reader.prompt("Enter key for replacement: ")
+                : request.args().get(0);
+
         try {
             Long key = Long.parseLong(keyStr);
             HumanBeing current = collectionManager.getCollection().get(key);
             if (current == null) {
-                return new Response("Element with this key not found", null, null);
+                return new Response("Element with this key not found");
             }
             HumanBeing newHuman = factory.createHumanBeing();
             if (newHuman.compareTo(current) > 0) {
                 collectionManager.getCollection().put(key, newHuman);
-                return new Response("Element replaced successfully", null, null);
+                return new Response("Element replaced successfully");
             } else {
-                return new Response("The new element is not greater than the existing one", null, null);
+                return new Response("The new element is not greater than the existing one");
             }
         } catch (NumberFormatException e) {
-            return new Response("The key must be a number", null, null);
+            return new Response("The key must be a number");
         }
     }
 

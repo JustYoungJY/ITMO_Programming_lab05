@@ -22,21 +22,18 @@ public class RemoveLowerKeyCommand implements Command {
 
     @Override
     public Response execute(Request request) {
-        List<String> args = request.args();
-        String thresholdStr;
-        if (!args.isEmpty()) {
-            thresholdStr = args.get(0);
-        } else {
-            thresholdStr = reader.prompt("Enter threshold key: ");
-        }
+        String thresholdStr = request.args().isEmpty()
+                ? reader.prompt("Enter threshold key: ")
+                : request.args().get(0);
+
         try {
             Long threshold = Long.parseLong(thresholdStr);
             int initialSize = collectionManager.getCollection().size();
             collectionManager.getCollection().keySet().removeIf(key -> key < threshold);
             int removed = initialSize - collectionManager.getCollection().size();
-            return new Response(removed + "items removed", null, null);
+            return new Response(removed + "items removed");
         } catch (NumberFormatException e) {
-            return new Response("The key must be a number", null, null);
+            return new Response("The key must be a number");
         }
     }
 

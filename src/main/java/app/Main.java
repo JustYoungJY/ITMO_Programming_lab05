@@ -10,6 +10,7 @@ import app.util.FileManager;
 import app.util.InputReader;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 
@@ -37,47 +38,48 @@ public class Main {
         // Loading a collection from a file
         try {
             collectionManager.setCollection(fileManager.loadCollection());
-            System.out.println("Collection successfully loaded from file");
+            System.out.printf("Collection successfully loaded from file %s%n", fileName);
         } catch (Exception e) {
             System.err.println("Error loading collection: " + e.getMessage());
         }
 
         // Registering commands
-        CommandInvoker invoker = new CommandInvoker();
-        invoker.register(new HelpCommand(invoker));
-        invoker.register(new InfoCommand(collectionManager));
-        invoker.register(new ShowCommand(collectionManager));
-        invoker.register(new InsertCommand(collectionManager, factory, inputReader));
-        invoker.register(new UpdateCommand(collectionManager, factory, inputReader));
-        invoker.register(new RemoveKeyCommand(collectionManager, inputReader));
-        invoker.register(new ClearCommand(collectionManager));
-        invoker.register(new SaveCommand(collectionManager, fileManager));
-        invoker.register(new ExecuteScriptCommand(invoker, inputReader));
-        invoker.register(new ExitCommand());
-        invoker.register(new RemoveLowerCommand(collectionManager, factory, inputReader));
-        invoker.register(new ReplaceIfGreaterCommand(collectionManager, factory, inputReader));
-        invoker.register(new RemoveLowerKeyCommand(collectionManager, inputReader));
-        invoker.register(new AverageOfImpactSpeedCommand(collectionManager));
-        invoker.register(new CountLessThanWeaponTypeCommand(collectionManager, inputReader));
-        invoker.register(new PrintDescendingCommand(collectionManager));
-
+        CommandInvoker invoker = new CommandInvoker() {{
+            register(new HelpCommand(this));
+            register(new InfoCommand(collectionManager));
+            register(new ShowCommand(collectionManager));
+            register(new InsertCommand(collectionManager, factory, inputReader));
+            register(new UpdateCommand(collectionManager, factory, inputReader));
+            register(new RemoveKeyCommand(collectionManager, inputReader));
+            register(new ClearCommand(collectionManager));
+            register(new SaveCommand(collectionManager, fileManager));
+            register(new ExecuteScriptCommand(this, inputReader));
+            register(new ExitCommand());
+            register(new RemoveLowerCommand(collectionManager, factory));
+            register(new ReplaceIfGreaterCommand(collectionManager, factory, inputReader));
+            register(new RemoveLowerKeyCommand(collectionManager, inputReader));
+            register(new AverageOfImpactSpeedCommand(collectionManager));
+            register(new CountLessThanWeaponTypeCommand(collectionManager, inputReader));
+            register(new PrintDescendingCommand(collectionManager));
+        }};
 
         // Command loop
         System.out.println("Enter command:");
         while (true) {
-            System.out.print("> ");
-            String inputLine = inputReader.readLine();
+            String inputLine = inputReader.prompt("> ");
             if (inputLine == null || inputLine.trim().isEmpty()) continue;
+
             String[] parts = inputLine.trim().split("\\s+", 2);
-            String commandName = parts[0];
-            String[] argsArray = parts.length > 1 ? parts[1].split("\\s+") : new String[0];
-            Request request = new Request(commandName, Arrays.asList(argsArray), List.of());
-            try {
-                Response response = invoker.executeCommand(request);
-                System.out.println(response.message());
-            } catch (Exception e) {
-                System.err.println("Error: " + e.getMessage());
-            }
+            Request request = new Request(parts[0],
+                    parts.length > 1
+                            ? Arrays.asList(parts[1].split("\\s+"))
+                            : Collections.emptyList()
+                    , List.of());
+
+            Response response = invoker.executeCommand(request);
+
+            System.out.println(response.message());
+            // todo а где остальные поля?
         }
     }
 }

@@ -23,23 +23,21 @@ public class UpdateCommand implements Command {
 
     @Override
     public Response execute(Request request) {
-        String idStr;
-        if (!request.args().isEmpty()) {
-            idStr = request.args().get(0);
-        } else {
-            idStr = reader.prompt("Enter id of element to update: ");
-        }
+        String idStr = request.args().isEmpty()
+                ? reader.prompt("Enter id of element to update: ")
+                : request.args().get(0);
+
         try {
             long id = Long.parseLong(idStr);
             HumanBeing newHuman = factory.createHumanBeing();
             boolean update = collectionManager.updateById(id, newHuman);
             if (update) {
-                return new Response("Element updated successfully", null, null);
+                return new Response("Element updated successfully");
             } else {
-                return new Response("Element with this id not found", null, null);
+                return new Response("Element with this id not found");
             }
         } catch (NumberFormatException e) {
-            return new Response("Id must be a number", null, null);
+            return new Response("Id must be a number");
         }
     }
 
